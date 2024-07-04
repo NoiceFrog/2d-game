@@ -64,7 +64,7 @@ void Input() {
 	while(SDL_PollEvent(&e) !=0) {
 		if(e.type == SDL_QUIT) {
 			printf("Goodbye!\n");
-			gQuit = true;
+			gQuit = true;	
 		}
 	}
 }
