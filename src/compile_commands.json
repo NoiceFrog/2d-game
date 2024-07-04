@@ -1,0 +1,15 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-c",
+      "-Wall",
+      "-o",
+      "main",
+      "main.c"
+    ],
+    "directory": "/home/angel/programming/C/opengl-tests/2d-game/src",
+    "file": "/home/angel/programming/C/opengl-tests/2d-game/src/main.c",
+    "output": "/home/angel/programming/C/opengl-tests/2d-game/src/main"
+  }
+]
