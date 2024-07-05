@@ -1,9 +1,8 @@
 [
   {
     "arguments": [
-      "/usr/bin/g++",
+      "/usr/bin/gcc",
       "-c",
-      "-Wall",
       "-o",
       "main",
       "main.c"

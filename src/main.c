@@ -1,103 +1,66 @@
-#include "../libs/glad/src/glad.c"
-//#include <GLFW/glfw3.h>
-//#include "../libs/imgui/imgui.h"
-//#include <math.h>
-#include <SDL2/SDL.h>
+#include "../libs/glad/include/glad/glad.h"
+#include <GLFW/glfw3.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
-//#include <stdlib.h>
 
-// Globals
-int gScreenWidth = 640;
-int gScreenHeight = 480;
-SDL_Window* gGraphicsApplicationWindow = NULL;
-SDL_GLContext gOpenGLContext = NULL;
-
-bool gQuit = false; // If true, we quit
-
-void GetOpenGLVersionInfo() {
-	printf("Vendor: %s\n", glGetString(GL_VENDOR));
-  printf("Renderer: %s\n", glGetString(GL_RENDERER));
-  printf("Version: %s\n", glGetString(GL_VERSION));
-	printf("Shading Language: %s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
+// Callback function for window resize
+void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
+    glViewport(0, 0, width, height);
 }
 
-void InitializeProgram() {
-  if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-    perror("SDL2 could not initialize video subsystem\n");
-    exit(21); 
-  }
-
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
-
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
-
-  gGraphicsApplicationWindow = SDL_CreateWindow("OpenGL Window", 0, 0, gScreenWidth, gScreenHeight, SDL_WINDOW_OPENGL);
-
-  if (gGraphicsApplicationWindow == NULL) {
-    perror("SDL_Window was not able to be created\n");
-    exit(21);
-  }
-
-  gOpenGLContext = SDL_GL_CreateContext(gGraphicsApplicationWindow);
-
-  if (gOpenGLContext == NULL) {
-		perror("OpenGL context not available\n");
-		exit(21);
-	}
-
-	if(!gladLoadGLLoader(SDL_GL_GetProcAddress)) {
-		perror("glad was not initialized");
-		exit(21);
-	}
-
-	GetOpenGLVersionInfo();
-}
-
-void Input() {
-	SDL_Event e;
-
-	while(SDL_PollEvent(&e) !=0) {
-		if(e.type == SDL_QUIT) {
-			printf("Goodbye!\n");
-			gQuit = true;	
-		}
-	}
-}
-
-void PreDraw() {
-
-}
-  
-void Draw() {
-
-}
-
-void MainLoop() {
-	while(!gQuit) {
-		Input();
-		PreDraw();
-		Draw();
-
-		// Update the screen
-		SDL_GL_SwapWindow(gGraphicsApplicationWindow);
-	}
-}
-
-void CleanUp() {
-	SDL_DestroyWindow(gGraphicsApplicationWindow);
-  SDL_Quit();
+// Process input (e.g., close window on ESC key press)
+void processInput(GLFWwindow *window) {
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, 1);
 }
 
 int main() {
-  InitializeProgram();
-  
-  MainLoop();
+    // Initialize GLFW
+    if (!glfwInit()) {
+        fprintf(stderr, "Failed to initialize GLFW\n");
+        return -1;
+    }
 
-  CleanUp();
-  return 0;
+    // Set GLFW options (e.g., OpenGL version)
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+    // Create a GLFW window
+    GLFWwindow* window = glfwCreateWindow(800, 600, "Learn OpenGL", NULL, NULL);
+    if (window == NULL) {
+        fprintf(stderr, "Failed to create GLFW window\n");
+        glfwTerminate();
+        return -1;
+    }
+    glfwMakeContextCurrent(window);
+
+    // Load OpenGL function pointers using GLAD
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+        fprintf(stderr, "Failed to initialize GLAD\n");
+        return -1;
+    }
+
+    // Set the viewport
+    glViewport(0, 0, 800, 600);
+
+    // Register callback for window resize
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+
+    // Main loop
+    while (!glfwWindowShouldClose(window)) {
+        // Process input
+        processInput(window);
+
+        // Render here
+        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        // Swap buffers and poll IO events
+        glfwSwapBuffers(window);
+        glfwPollEvents();
+    }
+
+    // Clean up and exit
+    glfwTerminate();
+    return 0;
 }
